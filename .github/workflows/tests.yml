@@ -14,5 +14,4 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         name: Install UV
       
-      - run: echo "hola mundo"
-      - run : ls -la
+      - run: uvx pytest test_code.py
