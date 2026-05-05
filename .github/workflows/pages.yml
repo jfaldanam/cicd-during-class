@@ -1,8 +1,8 @@
-name: Deploy github pages
+name: GitHub Pages
 
 on:
   push:
-    branches: ["main"]
+    branches: ["master"]
 
 permissions:
   contents: read
@@ -12,20 +12,27 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - uses: actions/checkout@v4
 
-      - run: |
-          python -c "
-          code = open("src.py").read()
-          html = open("template.html").read().replace("{{code}}", code)
-          open("public/index.html", "w").write(html)
+      - name: Inject code into template
+        run: |
+          python3 -c "
+          code = open('src.py').read()
+          html = open('template.html').read().replace('{{CODE}}', code)
+          open('index.html', 'w').write(html)
           "
 
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: public
-      
-      - uses: actions/deploy-pages@v5
+          path: .
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
